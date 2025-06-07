@@ -41,16 +41,17 @@ def convert_inputs():
             add_output_line(result)
         else:
             mm_equiv = round(result * 25.4, 4)
-            add_output_line(
-                f'SAE ({sae_value}) = {result}" ≈ {mm_equiv} mm')
+            add_output_line(f'SAE ({sae_value}) = {result}" ≈ {mm_equiv} mm')
     if metric_value:
         try:
             mm = float(metric_value)
             dec_in, frac = metric_to_imperial(mm)
-            add_output_line(
-                f'Metric ({mm} mm) = {dec_in}" ≈ {frac}"')
+            add_output_line(f'Metric ({mm} mm) = {dec_in}" ≈ {frac}"')
         except ValueError:
             add_output_line("Invalid metric input.")
+
+    sae_entry.delete(0, tk.END)
+    metric_entry.delete(0, tk.END)
 
 
 def process_file():
@@ -141,14 +142,16 @@ metric_entry.bind("<Return>", handle_enter)
 tk.Button(root, text="Convert", command=convert_inputs).pack(pady=10)
 tk.Button(root, text="Upload File (list)", command=process_file).pack()
 
+# Canvas and Scrollable Frame
 output_canvas = tk.Canvas(root, height=250, width=460, bg="white")
-output_canvas.pack(pady=10)
+output_canvas.pack(side="left", fill="both", expand=True, padx=10, pady=10)
 
 scrollbar = tk.Scrollbar(root, orient="vertical", command=output_canvas.yview)
 scrollbar.pack(side="right", fill="y")
 
 output_frame = tk.Frame(output_canvas, bg="white")
 output_canvas.create_window((0, 0), window=output_frame, anchor='nw')
+
 output_canvas.configure(yscrollcommand=scrollbar.set)
 
 
