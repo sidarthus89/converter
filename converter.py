@@ -1,7 +1,7 @@
-import csv
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from fractions import Fraction
+import csv
 
 # ----- Conversion Functions -----
 
@@ -28,26 +28,10 @@ def metric_to_imperial(metric_mm):
     fraction = decimal_to_fraction(decimal_inches)
     return round(decimal_inches, 4), fraction
 
-
-def imperial_to_metric(inches):
-    return round(inches * 25.4, 2)
-
 # ----- GUI Logic -----
 
 
-def add_output_line(text):
-    line_frame = tk.Frame(output_frame, bg="white")
-    line_label = tk.Label(line_frame, text=text,
-                          anchor='w', justify='left', bg="white")
-    close_button = tk.Button(
-        line_frame, text="✕", command=line_frame.destroy, bg="white", fg="red", bd=0)
-
-    line_label.pack(side="left", fill="x", expand=True, padx=(2, 4))
-    close_button.pack(side="right")
-    line_frame.pack(fill="x", pady=1)
-
-
-def convert_inputs(event=None):
+def convert_inputs():
     sae_value = sae_entry.get().strip()
     metric_value = metric_entry.get().strip()
 
@@ -56,25 +40,17 @@ def convert_inputs(event=None):
         if isinstance(result, str):
             add_output_line(result)
         else:
-            metric_equiv = imperial_to_metric(result)
-            out = f"SAE ({sae_value}) = {format(result, '.4f')}\" = {metric_equiv} mm"
-            add_output_line(out)
-
+            mm_equiv = round(result * 25.4, 4)
+            add_output_line(
+                f'SAE ({sae_value}) = {result}" ≈ {mm_equiv} mm')
     if metric_value:
         try:
             mm = float(metric_value)
             dec_in, frac = metric_to_imperial(mm)
-            out = f"Metric ({mm} mm) = {format(dec_in, '.4f')}\" ≈ {frac}\""
-            add_output_line(out)
+            add_output_line(
+                f'Metric ({mm} mm) = {dec_in}" ≈ {frac}"')
         except ValueError:
             add_output_line("Invalid metric input.")
-
-
-def clear_output():
-    for child in output_frame.winfo_children():
-        child.destroy()
-    sae_entry.delete(0, tk.END)
-    metric_entry.delete(0, tk.END)
 
 
 def process_file():
@@ -100,13 +76,13 @@ def process_file():
                     if isinstance(result, str):
                         output = result
                     else:
-                        metric_equiv = imperial_to_metric(result)
-                        output = f"{value} (SAE) = {format(result, '.4f')}\" = {metric_equiv} mm"
+                        mm_equiv = round(result * 25.4, 4)
+                        output = f"{value} (SAE) = {result}\" ≈ {mm_equiv} mm"
                 else:
                     try:
                         mm = float(value)
                         dec_in, frac = metric_to_imperial(mm)
-                        output = f"{value} mm = {format(dec_in, '.4f')}\" ≈ {frac}\""
+                        output = f"{value} mm = {dec_in}\" ≈ {frac}\""
                     except ValueError:
                         output = f"Invalid input: {value}"
                 results.append([value, output])
@@ -123,47 +99,66 @@ def process_file():
     except Exception as e:
         messagebox.showerror("Error", f"Could not read file:\n{e}")
 
+
+def add_output_line(text):
+    frame = tk.Frame(output_frame, bg="white")
+    frame.pack(fill='x', pady=1, padx=2)
+
+    label = tk.Label(frame, text=text, anchor='w', justify='left', bg="white")
+    label.pack(side='left', fill='x', expand=True)
+
+    close_btn = tk.Button(frame, text='x', command=frame.destroy,
+                          fg="red", bg="white", bd=0, padx=4, font=("Arial", 10, "bold"))
+    close_btn.pack(side='right')
+
+
+def clear_output():
+    for widget in output_frame.winfo_children():
+        widget.destroy()
+
+
+def handle_enter(event):
+    convert_inputs()
+
 # ----- GUI Setup -----
 
 
 root = tk.Tk()
 root.title("SAE / Metric Converter")
-root.geometry("450x500")
+root.geometry("500x500")
 root.resizable(False, False)
 
 tk.Label(root, text="Enter SAE (e.g. 1_1/2 or 3/8):").pack(pady=(10, 0))
 sae_entry = tk.Entry(root)
-sae_entry.pack(fill="x", padx=10)
-sae_entry.bind("<Return>", convert_inputs)
+sae_entry.pack()
+sae_entry.bind("<Return>", handle_enter)
 
 tk.Label(root, text="Enter Metric (e.g. 20 for 20mm):").pack(pady=(10, 0))
 metric_entry = tk.Entry(root)
-metric_entry.pack(fill="x", padx=10)
-metric_entry.bind("<Return>", convert_inputs)
+metric_entry.pack()
+metric_entry.bind("<Return>", handle_enter)
 
 tk.Button(root, text="Convert", command=convert_inputs).pack(pady=10)
 tk.Button(root, text="Upload File (list)", command=process_file).pack()
 
-# Scrollable frame for outputs
-output_canvas = tk.Canvas(root, height=220, bg="white",
-                          highlightthickness=1, highlightbackground="gray")
-output_scroll = tk.Scrollbar(
-    root, orient="vertical", command=output_canvas.yview)
+output_canvas = tk.Canvas(root, height=250, width=460, bg="white")
+output_canvas.pack(pady=10)
+
+scrollbar = tk.Scrollbar(root, orient="vertical", command=output_canvas.yview)
+scrollbar.pack(side="right", fill="y")
+
 output_frame = tk.Frame(output_canvas, bg="white")
+output_canvas.create_window((0, 0), window=output_frame, anchor='nw')
+output_canvas.configure(yscrollcommand=scrollbar.set)
 
-output_frame.bind(
-    "<Configure>",
-    lambda e: output_canvas.configure(scrollregion=output_canvas.bbox("all"))
-)
 
-canvas_window = output_canvas.create_window(
-    (0, 0), window=output_frame, anchor="nw")
-output_canvas.configure(yscrollcommand=output_scroll.set)
+def on_frame_configure(event):
+    output_canvas.configure(scrollregion=output_canvas.bbox("all"))
 
-output_canvas.pack(fill="both", padx=10, pady=(10, 0), expand=False)
-output_scroll.pack(fill="y", side="right", in_=output_canvas)
 
-tk.Button(root, text="Clear All", command=clear_output).pack(pady=(5, 2))
+output_frame.bind("<Configure>", on_frame_configure)
+
+tk.Button(root, text="Clear All", command=clear_output).pack(pady=(0, 10))
 tk.Button(root, text="Quit", command=root.destroy).pack(pady=(0, 10))
 
 root.mainloop()
