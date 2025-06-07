@@ -1,0 +1,7 @@
+# Ignore build artifacts
+build/
+*.pyc
+__pycache__/
+
+# Keep the dist folder
+!dist/
