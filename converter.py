@@ -185,7 +185,7 @@ def open_donation_link():
     webbrowser.open_new("https://paypal.me/pologoalie8908")
 
 
-donate_link = tk.Label(root, text="💖 Donate", fg="blue",
+donate_link = tk.Label(root, text="Donate?", fg="blue",
                        cursor="hand2", font=("Arial", 10, "underline"))
 donate_link.pack(pady=(0, 10))
 donate_link.bind("<Button-1>", lambda e: open_donation_link())
