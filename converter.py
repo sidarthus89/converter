@@ -126,9 +126,10 @@ def handle_enter(event):
 
 root = tk.Tk()
 root.title("SAE / Metric Converter")
-root.geometry("500x500")
+root.geometry("540x560")
 root.resizable(False, False)
 
+# Input Fields
 tk.Label(root, text="Enter SAE (e.g. 1_1/2 or 3/8):").pack(pady=(10, 0))
 sae_entry = tk.Entry(root)
 sae_entry.pack()
@@ -139,20 +140,24 @@ metric_entry = tk.Entry(root)
 metric_entry.pack()
 metric_entry.bind("<Return>", handle_enter)
 
+# Buttons
 tk.Button(root, text="Convert", command=convert_inputs).pack(pady=10)
 tk.Button(root, text="Upload File (list)", command=process_file).pack()
 
-# Canvas and Scrollable Frame
-output_canvas = tk.Canvas(root, height=250, width=460, bg="white")
-output_canvas.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+# Scrollable Output
+output_frame_container = tk.Frame(root)
+output_frame_container.pack(fill="both", expand=True, padx=10, pady=10)
 
-scrollbar = tk.Scrollbar(root, orient="vertical", command=output_canvas.yview)
+output_canvas = tk.Canvas(output_frame_container, height=280, bg="white")
+scrollbar = tk.Scrollbar(output_frame_container,
+                         orient="vertical", command=output_canvas.yview)
+output_canvas.configure(yscrollcommand=scrollbar.set)
+
 scrollbar.pack(side="right", fill="y")
+output_canvas.pack(side="left", fill="both", expand=True)
 
 output_frame = tk.Frame(output_canvas, bg="white")
 output_canvas.create_window((0, 0), window=output_frame, anchor='nw')
-
-output_canvas.configure(yscrollcommand=scrollbar.set)
 
 
 def on_frame_configure(event):
@@ -161,7 +166,13 @@ def on_frame_configure(event):
 
 output_frame.bind("<Configure>", on_frame_configure)
 
-tk.Button(root, text="Clear All", command=clear_output).pack(pady=(0, 10))
-tk.Button(root, text="Quit", command=root.destroy).pack(pady=(0, 10))
+# Clear / Quit Buttons
+button_frame = tk.Frame(root)
+button_frame.pack(pady=(0, 10))
+
+tk.Button(button_frame, text="Clear All", command=clear_output,
+          width=10).pack(side="left", padx=10)
+tk.Button(button_frame, text="Quit", command=root.destroy,
+          width=10).pack(side="right", padx=10)
 
 root.mainloop()
