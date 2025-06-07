@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox
 from fractions import Fraction
 import csv
+import webbrowser
 
 # ----- Conversion Functions -----
 
@@ -176,3 +177,15 @@ tk.Button(button_frame, text="Quit", command=root.destroy,
           width=10).pack(side="right", padx=10)
 
 root.mainloop()
+
+# Donate Link
+
+
+def open_donation_link():
+    webbrowser.open_new("https://paypal.me/pologoalie8908")
+
+
+donate_link = tk.Label(root, text="💖 Donate", fg="blue",
+                       cursor="hand2", font=("Arial", 10, "underline"))
+donate_link.pack(pady=(0, 10))
+donate_link.bind("<Button-1>", lambda e: open_donation_link())
