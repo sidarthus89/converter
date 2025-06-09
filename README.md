@@ -1,6 +1,7 @@
-This is just a simple SAE & Metric Converter program.
+This is just a simple SAE(imperial) & Metric Converter program.
 
-It will allow you to enter either a fractional SAE or metric length and it will generate back a decimal SAE and metric.
+If you enter an SAE measurement, it will generate the decimal inch, 
 
-![image](https://github.com/user-attachments/assets/36a6cbce-7703-4c70-9769-bfff852e03c3)
+![image](https://github.com/user-attachments/assets/74cbf9e2-34e2-42ed-b3c0-90f20a56554a)
+
 
