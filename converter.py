@@ -41,6 +41,8 @@ def metric_to_imperial(metric_mm):
 
 def decimal_to_sae_approx(decimal):
     frac = nearest_power2_fraction(decimal)
+    if frac is None:
+        return "N/A"
     whole = frac.numerator // frac.denominator
     remainder = frac - whole
     if remainder == 0:
