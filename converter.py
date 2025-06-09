@@ -130,18 +130,20 @@ def convert_inputs():
         else:
             mm_equiv = round(result * 25.4, 4)
             sae_approx = decimal_to_sae_approx(result)
-            add_output_line(
-                f'SAE ({sae_value}) = {result}" ≈ {sae_approx}" = {mm_equiv} mm')
+            add_output_line(f'{sae_approx}" = {result}" = {mm_equiv}mm')
 
     if metric_value:
         try:
             mm = float(metric_value)
             dec_in = metric_to_imperial(mm)
             frac = decimal_to_sae_approx(dec_in)
-            op_symbol = "=" if str(frac).replace(" ", "") == str(
-                Fraction(dec_in).limit_denominator(64)) else "≈"
-            add_output_line(
-                f'Metric ({mm} mm) = {dec_in}" {op_symbol} {frac}"')
+
+            # Decide = vs ≈
+            exact_frac = str(Fraction(dec_in).limit_denominator(64))
+            op_symbol = "=" if frac.replace(
+                " ", "") == exact_frac.replace(" ", "") else "≈"
+
+            add_output_line(f'{mm}mm = {dec_in}" {op_symbol} {frac}"')
         except ValueError:
             add_output_line("Invalid metric input.")
 
