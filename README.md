@@ -1,7 +1,9 @@
 This is just a simple SAE(imperial) & Metric Converter program.
 
-If you enter an SAE measurement, it will generate the decimal inch, 
+*Metric input = Decimal" ≈ 2 SAE"
 
-![image](https://github.com/user-attachments/assets/74cbf9e2-34e2-42ed-b3c0-90f20a56554a)
+*SAE input = Deciaml" = MetricUnit
+
+![image](https://github.com/user-attachments/assets/ff5eb70e-1d33-4454-8d73-038d4076fb7b)
 
 
